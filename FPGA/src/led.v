@@ -42,18 +42,59 @@ always@(posedge rxd_flag or negedge rst)begin
     end
 end
 
+//always@(posedge rxd_flag or negedge rst)begin
+//    if(!rst)
+//        led<=1'b0;
+//    else if(rxd_out<8'h80)
+//        begin
+//            led<=1'b1;
+//            fword = 3316685096; // 3316669189
+//        end
+//    else
+//        begin
+//            led<=1'b0;
+//            fword = 3316669189; // 3316669189
+//        end
+//end
+
+reg [3:0] state_reg;
+
 always@(posedge rxd_flag or negedge rst)begin
     if(!rst)
         led<=1'b0;
     else if(rxd_out<8'h80)
         begin
-            led<=1'b1;
-            fword = 3316685096; // 3316669189
+            state_reg <= 0;
+            fword <= 0;
         end
     else
         begin
-            led<=1'b0;
-            fword = 3316669189; // 3316669189
+            case(state_reg)
+                4'd0: begin
+                    fword <= fword + rxd_out;
+                    state_reg <= 1;
+                end
+
+                4'd1: begin
+                    fword <= fword + (rxd_out << 8);
+                    state_reg <= 2;
+                end
+
+                4'd2: begin
+                    fword <= fword + (rxd_out << 16);
+                    state_reg <= 3;
+                end
+
+                4'd3: begin
+                    fword <= fword + (rxd_out << 24);
+                    state_reg <= 0;
+                end
+
+                default: begin
+                    fword <= 0;
+                    state_reg <= 0;
+                end
+            endcase
         end
 end
 

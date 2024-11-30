@@ -9,6 +9,10 @@
 
 void led_task(void *param);
 void fpga_spi_blink(bool en);
+void send_frequency(uint32_t&);
+
+uint32_t freq_1 = 3316685096;
+uint32_t freq_2 = 3316669189;
 
 void setup()
 {
@@ -49,10 +53,12 @@ void setup()
 void loop()
 {
     // PMU.setChargingLedMode(XPOWERS_CHG_LED_ON);
-    fpga_spi_blink(true);
+    // fpga_spi_blink(true);
+    send_frequency(freq_1);
     delay(500);                    // 20
     // PMU.setChargingLedMode(XPOWERS_CHG_LED_OFF);
-    fpga_spi_blink(false);
+    // fpga_spi_blink(false);
+    send_frequency(freq_2);
     delay(500);       // random(300, 980)
     // Serial.printf("[BAT]:percent: %d%%\r\n", PMU.getBatteryPercent());
 }
@@ -78,4 +84,28 @@ void fpga_spi_blink(bool en)
     SPI.endTransaction();
     digitalWrite(PIN_FPGA_CS, 1);
     // Serial.printf("input : %d  output : %d \r\n", fpga_input, fpga_output);
+}
+
+void send_frequency(uint32_t &freq){
+    uint32_t fword;
+    uint64_t tmp;
+    tmp = (uint64_t)freq*(uint64_t)4294967296;
+    fword = tmp / (uint32_t)27000000;
+
+    uint8_t buff[4];
+
+    buff[0] = freq       & 0xff;
+    buff[1] = freq >>  8 & 0xff;
+    buff[2] = freq >> 16 & 0xff;
+    buff[3] = freq >> 24 & 0xff; // старший, передавать с него
+
+    fpga_spi_blink(true);
+
+    for(uint8_t i=0;i<4;++i){
+        digitalWrite(PIN_FPGA_CS, 0);
+        SPI.beginTransaction(SPISettings(1000000, SPI_MSBFIRST, SPI_MODE3));
+        uint8_t fpga_output = SPI.transfer(buff[i]);
+        SPI.endTransaction();
+        digitalWrite(PIN_FPGA_CS, 1);
+    }
 }
