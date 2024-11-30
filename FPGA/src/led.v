@@ -18,6 +18,8 @@ module led(
     //output  reg         led_state
 );
 
+reg [31:0] fword;
+
 wire	[7:0]		rxd_out;
 
 //--------------------------------------------
@@ -44,9 +46,15 @@ always@(posedge rxd_flag or negedge rst)begin
     if(!rst)
         led<=1'b0;
     else if(rxd_out<8'h80)
-        led<=1'b1;
-    else 
-        led<=1'b0;
+        begin
+            led<=1'b1;
+            fword = 3316685096; // 3316669189
+        end
+    else
+        begin
+            led<=1'b0;
+            fword = 3316669189; // 3316669189
+        end
 end
 
 Gowin_OSC osc(//выход внутреннего кварцевого генератора 25MHz
@@ -86,7 +94,8 @@ dds_addr dds_addr_inst (
     .rst_n(1'b1),        // input wire rst_n
     .addr_out(addr_out),  // output wire [7 : 0] addr_out
     .test(),
-    .strobe(strobe_sin)
+    .strobe(strobe_sin),
+    .FWORD(fword)
 );  
 //----------------------------------------------------------
 

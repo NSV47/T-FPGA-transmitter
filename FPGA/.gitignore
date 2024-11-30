@@ -1,0 +1,6 @@
+*.coe
+*.mi
+*.docx
+/impl/gwsynthesis
+/impl/pnr
+/impl/temp

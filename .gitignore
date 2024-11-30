@@ -1,6 +1,0 @@
-*.coe
-*.mi
-*.docx
-/FPGA/impl/gwsynthesis
-/FPGA/impl/pnr
-/FPGA/impl/temp

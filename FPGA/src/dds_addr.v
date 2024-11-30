@@ -1,5 +1,6 @@
-module dds_addr (clk, rst_n, addr_out, test, strobe);
+module dds_addr (clk, rst_n, addr_out, test, strobe, FWORD);
     input clk, rst_n;          // Resetting the system clock
+    input [31:0] FWORD;
     output [11: 0] addr_out;    // The output address corresponding to the data in the ROM
 //    output [11: 0] addr_out_1;    // The output address corresponding to the data in the ROM
     output [11: 0] test;
@@ -7,7 +8,7 @@ module dds_addr (clk, rst_n, addr_out, test, strobe);
     parameter N = 32;
     parameter PWORD = 2048;     // Phase control word (x/360) * 256
 //    parameter PWORD_1 = 0;     // Phase control word (x/360) * 256
-    parameter FWORD = 3316669189;  // слово управления частотой F_out = B * (F_clk / 2 ** 32), fword = B 5KHZ // 858994
+//    parameter FWORD = 3316669189;  // слово управления частотой F_out = B * (F_clk / 2 ** 32), fword = B 5KHZ // 858994
     reg [N-1: 0] addr;         // 32-bit battery
 //    reg [11:0] addr;
     
