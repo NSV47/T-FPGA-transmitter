@@ -58,11 +58,10 @@ end
 //end
 
 reg [3:0] state_reg;
-
 always@(posedge rxd_flag or negedge rst)begin
     if(!rst)
         led<=1'b0;
-    else if(rxd_out<8'h80)
+    else if(rxd_out==8'h01)
         begin
             state_reg <= 0;
             fword <= 0;
