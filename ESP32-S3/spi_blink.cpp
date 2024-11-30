@@ -55,11 +55,11 @@ void loop()
     // PMU.setChargingLedMode(XPOWERS_CHG_LED_ON);
     // fpga_spi_blink(true);
     send_frequency(freq_1);
-    delay(500);                    // 20
+    delay(50);                    // 20
     // PMU.setChargingLedMode(XPOWERS_CHG_LED_OFF);
     // fpga_spi_blink(false);
     send_frequency(freq_2);
-    delay(500);       // random(300, 980)
+    delay(50);       // random(300, 980)
     // Serial.printf("[BAT]:percent: %d%%\r\n", PMU.getBatteryPercent());
 }
 

@@ -19,6 +19,8 @@ module led(
 );
 
 reg [31:0] fword;
+reg [31:0] fword_valid;
+reg ready_fword = 0;
 
 wire	[7:0]		rxd_out;
 
@@ -57,12 +59,18 @@ end
 //        end
 //end
 
+always@(posedge clk)begin
+    if(ready_fword == 1'b1)
+        fword_valid = fword;
+end
+
 reg [3:0] state_reg;
 always@(posedge rxd_flag or negedge rst)begin
     if(!rst)
         led<=1'b0;
     else if(rxd_out==8'h01)
         begin
+            ready_fword <= 1'b0;
             state_reg <= 0;
             fword <= 0;
         end
@@ -87,11 +95,13 @@ always@(posedge rxd_flag or negedge rst)begin
                 4'd3: begin
                     fword <= fword + (rxd_out << 24);
                     state_reg <= 0;
+                    ready_fword <= 1'b1;
                 end
 
                 default: begin
                     fword <= 0;
                     state_reg <= 0;
+                    ready_fword <= 1'b0;
                 end
             endcase
         end
@@ -135,7 +145,7 @@ dds_addr dds_addr_inst (
     .addr_out(addr_out),  // output wire [7 : 0] addr_out
     .test(),
     .strobe(strobe_sin),
-    .FWORD(fword)
+    .FWORD(fword_valid)
 );  
 //----------------------------------------------------------
 
