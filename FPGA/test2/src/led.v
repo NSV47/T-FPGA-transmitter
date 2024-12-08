@@ -1,13 +1,14 @@
 module led(
     input clk,
     input				rst,
-    output reg led,
+    output              led,
 
 //    wire [11: 0] addr_out, // 8-битный адрес, соответствующий данным в ПЗУ
     output [11: 0] sin,
 //    output TX,
     
     output clk_o,
+//    inout [7:0]gpio,
 //-----------------------------------------
     input				cs,
     input				sck,
@@ -35,6 +36,23 @@ wire [11: 0] sin_out;
 reg [28:0]cnt = 0;
 
 //-------------------------------------------
+
+//wire [7:0]gpio;
+
+//--------Copy here to design--------
+
+Gowin_EMPU_Top cortexM3_inst(
+    .sys_clk(clk), //input sys_clk
+    .gpio(led), //inout [15:0] gpio
+    .uart0_rxd(), //input uart0_rxd
+    .uart0_txd(), //output uart0_txd
+    .reset_n(1'b1) //input reset_n
+);
+
+//--------Copy end-------------------
+
+//assign led = gpio[7];
+
 always@(posedge rxd_flag or negedge rst)begin
     if(!rst)
         txd_dat <= 8'b11000011;
@@ -58,54 +76,6 @@ end
 //            fword = 3316669189; // 3316669189
 //        end
 //end
-
-always@(posedge clk)begin
-    if(ready_fword == 1'b1)
-        fword_valid = fword;
-end
-
-reg [3:0] state_reg;
-always@(posedge rxd_flag or negedge rst)begin
-    if(!rst)
-        led<=1'b0;
-    else if(rxd_out==8'h01)
-        begin
-            ready_fword <= 1'b0;
-            state_reg <= 0;
-            fword <= 0;
-        end
-    else
-        begin
-            case(state_reg)
-                4'd0: begin
-                    fword <= fword + rxd_out;
-                    state_reg <= 1;
-                end
-
-                4'd1: begin
-                    fword <= fword + (rxd_out << 8);
-                    state_reg <= 2;
-                end
-
-                4'd2: begin
-                    fword <= fword + (rxd_out << 16);
-                    state_reg <= 3;
-                end
-
-                4'd3: begin
-                    fword <= fword + (rxd_out << 24);
-                    state_reg <= 0;
-                    ready_fword <= 1'b1;
-                end
-
-                default: begin
-                    fword <= 0;
-                    state_reg <= 0;
-                    ready_fword <= 1'b0;
-                end
-            endcase
-        end
-end
 
 Gowin_OSC osc(//выход внутреннего кварцевого генератора 25MHz
     .oscout(oscout_o), //output oscout
@@ -132,7 +102,7 @@ spi_slaver spi_slaver1(
 //-------------------------------------------
 //always @(posedge clk) begin
 //    cnt <= cnt + 1;
-//    if(cnt==13500000) begin
+//    if(cnt==27000000) begin
 //        cnt <= 0;
 //        led<=!led;
 //    end
@@ -141,7 +111,7 @@ spi_slaver spi_slaver1(
 // --------------Phase-based  module------------------------   
 dds_addr dds_addr_inst (
     .clk(clk),            // input wire clk
-    .rst_n(1'b1),        // input wire rst_n
+    .rst_n(1'b0),        // input wire rst_n // 1 enable
     .addr_out(addr_out),  // output wire [7 : 0] addr_out
     .test(),
     .strobe(strobe_sin),
@@ -155,7 +125,7 @@ Gowin_pROM rom_inst (
     .clk(clk), //input clk
     .oce(), //input oce
     .ce(1'b1), //input ce
-    .reset(1'b0), //input reset
+    .reset(1'b1), //input reset // 0 enable
     .ad(addr_out) //input [11:0] ad
 );
 

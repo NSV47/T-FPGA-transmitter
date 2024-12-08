@@ -6,6 +6,7 @@
     <Device name="GW1NSR-4C" pn="GW1NSR-LV4CQN48PC6/I5">gw1nsr4c-000</Device>
     <FileList>
         <File path="src/dds_addr.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_empu/gowin_empu.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_osc/gowin_osc.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_pllvr/gowin_pllvr.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_prom/gowin_prom.v" type="file.verilog" enable="1"/>
