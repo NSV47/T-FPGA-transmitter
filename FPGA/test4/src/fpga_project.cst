@@ -1,0 +1,70 @@
+//Copyright (C)2014-2021 Gowin Semiconductor Corporation.
+//All rights reserved. 
+//File Title: Physical Constraints file
+//GOWIN Version: 1.9.8.01
+//Part Number: GW1NSR-LV4CQN48PC6/I5
+//Device: GW1NSR-4C
+//Created Time: Tue 02 21 14:47:43 2023
+
+IO_LOC "led" 15;
+IO_PORT "led" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+IO_LOC "clk" 45;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+IO_LOC "rst" 46;
+IO_PORT "rst" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+IO_LOC "UART_TX" 22;
+IO_PORT "UART_TX" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 OPEN_DRAIN=ON;
+
+//-------------------------------------------------------------
+IO_LOC "rxd_flag" 42;
+IO_PORT "rxd_flag" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+//IO_LOC "MISO" 40;
+//IO_PORT "MISO" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
+//IO_LOC "MOSI" 41;
+//IO_PORT "MOSI" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+//IO_LOC "sck" 44;
+//IO_PORT "sck" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+//IO_LOC "cs" 39;
+//IO_PORT "cs" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+//-------------------------------------------------------------
+
+IO_LOC "clk_o" 29; // 23
+IO_PORT "clk_o" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+IO_LOC "sin[0]" 20;
+IO_PORT "sin[0]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "sin[1]" 21;
+IO_PORT "sin[1]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "sin[2]" 18;
+IO_PORT "sin[2]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "sin[3]" 19;
+IO_PORT "sin[3]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "sin[4]" 16;
+IO_PORT "sin[4]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "sin[5]" 17;
+IO_PORT "sin[5]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "sin[6]" 13;
+IO_PORT "sin[6]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "sin[7]" 14;
+IO_PORT "sin[7]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "sin[8]" 34;
+IO_PORT "sin[8]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "sin[9]" 35;
+IO_PORT "sin[9]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "sin[10]" 31;
+IO_PORT "sin[10]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "sin[11]" 32;
+IO_PORT "sin[11]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
