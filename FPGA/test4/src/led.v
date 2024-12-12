@@ -78,12 +78,12 @@ always@(posedge rxd_flag or negedge rst)begin
     else if(rxd_out<8'h80)
         begin
             led<=1'b1;
-//            fword = 3316685096; // 3316669189
+            fword = 1613094272; // 3316669189 // 1613094272 = 10 140 600 // 3316685096
         end
     else
         begin
             led<=1'b0;
-//            fword = 3316669189; // 3316669189
+            fword = 1613110179; // 3316669189 // 1 613 110 179 = 10140700
         end
 end
 
@@ -130,11 +130,11 @@ spi_slaver spi_slaver1(
 // --------------Phase-based  module------------------------   
 dds_addr dds_addr_inst (
     .clk(clk),            // input wire clk
-    .rst_n(1'b0),        // input wire rst_n // 1 enable
+    .rst_n(1'b1),        // input wire rst_n // 1 enable
     .addr_out(addr_out),  // output wire [7 : 0] addr_out
     .test(),
     .strobe(strobe_sin),
-    .FWORD(fword_valid)
+    .FWORD(fword) // fword // fword_valid
 );  
 //----------------------------------------------------------
 
@@ -144,7 +144,7 @@ Gowin_pROM rom_inst (
     .clk(clk), //input clk
     .oce(), //input oce
     .ce(1'b1), //input ce
-    .reset(1'b1), //input reset // 0 enable
+    .reset(1'b0), //input reset // 0 enable
     .ad(addr_out) //input [11:0] ad
 );
 
