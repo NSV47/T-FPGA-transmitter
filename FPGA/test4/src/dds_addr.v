@@ -11,7 +11,10 @@ module dds_addr (clk, rst_n, addr_out, test, strobe, FWORD);
 //    parameter FWORD = 3316669189;  // слово управления частотой F_out = B * (F_clk / 2 ** 32), fword = B 5KHZ // 858994
     reg [N-1: 0] addr;         // 32-bit battery
 //    reg [11:0] addr;
-    
+    reg [31:0] fword;
+    always @ (posedge clk)begin
+        fword <= FWORD;
+    end
     reg strobe_r;
     always @ (posedge clk or negedge rst_n)
     begin
@@ -22,7 +25,7 @@ module dds_addr (clk, rst_n, addr_out, test, strobe, FWORD);
       else
           begin
               //Each word size outputs an address, if the word control frequency is 2, then the output of the address counter is 0, 2, 4...
-              addr <= addr + FWORD;
+              addr <= addr + fword;
               if (addr[N-1:N-12] + PWORD == 12'hc00) begin
                   strobe_r <= 1'b1;
               end

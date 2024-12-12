@@ -25,8 +25,12 @@ wire				MOSI;
 wire				MISO;
 
 reg [31:0] fword;
-reg [31:0] fword_valid;
-reg ready_fword = 0;
+reg [31:0] tmp;
+reg [31:0] tmp1;
+reg [31:0] tmp2;
+reg [31:0] tmp3;
+//reg [31:0] fword_valid;
+//reg ready_fword = 0;
 
 wire	[7:0]		rxd_out;
 
@@ -37,9 +41,9 @@ wire clk_60M;
 //--------------------------------------------
 wire [11: 0] addr_out;
 wire pll_out_clk;
-wire [11: 0] sin_out;
+//wire [11: 0] sin_out;
 
-reg [28:0]cnt = 0;
+//reg [28:0]cnt = 0;
 
 //-------------------------------------------
 
@@ -71,7 +75,7 @@ always@(posedge rxd_flag or negedge rst)begin
         txd_dat <= rxd_out + 1'b1; //отправить данные +1 отправителю
     end
 end
-
+/*
 always@(posedge rxd_flag or negedge rst)begin
     if(!rst)
         led<=1'b0;
@@ -86,6 +90,57 @@ always@(posedge rxd_flag or negedge rst)begin
             fword = 1613110179; // 3316669189 // 1 613 110 179 = 10140700
         end
 end
+*/
+
+reg [3:0] state_reg;
+always@(posedge rxd_flag or negedge rst)begin
+    if(!rst)
+        led<=1'b0;
+    else if(rxd_out==8'h01)
+        begin
+//            ready_fword <= 1'b0;
+            state_reg <= 0;
+            fword <= 0;
+        end
+    else
+        begin
+            case(state_reg)
+                4'd0: begin
+                    fword <= fword + rxd_out;
+                    state_reg <= 1;
+                end
+
+                4'd1: begin
+//                    tmp <= rxd_out << 8;
+                    tmp1 <= fword + (rxd_out << 8); // +tmp
+//                    fword = tmp1;
+//                    fword <= fword + (rxd_out << 8);
+                    state_reg <= 2;
+                end
+
+                4'd2: begin
+//                    tmp <= rxd_out << 16;
+                    tmp2 <= tmp1 + (rxd_out << 16); // +tmp
+//                    fword <= fword + (rxd_out << 16);
+                    state_reg <= 3;
+                end
+
+                4'd3: begin
+//                    tmp <= rxd_out << 24;
+                    tmp3 <= tmp2 + (rxd_out << 24); // +tmp
+//                    fword <= fword + (rxd_out << 24);
+                    state_reg <= 0;
+//                    ready_fword <= 1'b1;
+                end
+
+                default: begin
+                    fword <= 0;
+                    state_reg <= 0;
+//                    ready_fword <= 1'b0;
+                end
+            endcase
+        end
+end
 
 //--------Copy here to design--------
 
@@ -95,7 +150,7 @@ Gowin_PLLVR1 your_instance_name(
 );
 
 //--------Copy end-------------------
-
+/*
 Gowin_OSC osc(//выход внутреннего кварцевого генератора 25MHz
     .oscout(oscout_o), //output oscout
     .oscen(1) //input oscen
@@ -105,7 +160,7 @@ Gowin_PLLVR pll(//октава до 30Mhz
     .clkout(clk_30M), //output clkout
     .clkin(oscout_o) //input clkin
 );
-
+*/
 spi_slaver spi_slaver1(
     .clk(clk_60M), // clk_30M
     .rst(rst),
@@ -134,7 +189,7 @@ dds_addr dds_addr_inst (
     .addr_out(addr_out),  // output wire [7 : 0] addr_out
     .test(),
     .strobe(strobe_sin),
-    .FWORD(fword) // fword // fword_valid
+    .FWORD(tmp3) // fword // fword_valid
 );  
 //----------------------------------------------------------
 

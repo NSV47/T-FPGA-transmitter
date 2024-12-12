@@ -7,8 +7,8 @@
     <FileList>
         <File path="src/dds_addr.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_empu/gowin_empu.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_osc/gowin_osc.v" type="file.verilog" enable="1"/>
-        <File path="src/gowin_pllvr/gowin_pllvr.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_osc/gowin_osc.v" type="file.verilog" enable="0"/>
+        <File path="src/gowin_pllvr/gowin_pllvr.v" type="file.verilog" enable="0"/>
         <File path="src/gowin_pllvr/gowin_pllvr1.v" type="file.verilog" enable="1"/>
         <File path="src/gowin_prom/gowin_prom.v" type="file.verilog" enable="1"/>
         <File path="src/led.v" type="file.verilog" enable="1"/>
