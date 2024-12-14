@@ -24,11 +24,6 @@ wire				sck;
 wire				MOSI;
 wire				MISO;
 
-reg [31:0] fword;
-reg [31:0] tmp;
-reg [31:0] tmp1;
-reg [31:0] tmp2;
-reg [31:0] tmp3;
 //reg [31:0] fword_valid;
 //reg ready_fword = 0;
 
@@ -92,7 +87,16 @@ always@(posedge rxd_flag or negedge rst)begin
 end
 */
 
+reg [31:0] fword;
+reg [31:0] tmp;
+reg [31:0] tmp1;
+reg [31:0] tmp2;
+reg [31:0] tmp3;
+reg [15:0] tmp4;
+reg [15:0] tmp5;
+reg       flag_phase;
 reg [3:0] state_reg;
+
 always@(posedge rxd_flag or negedge rst)begin
     if(!rst)
         led<=1'b0;
@@ -101,6 +105,16 @@ always@(posedge rxd_flag or negedge rst)begin
 //            ready_fword <= 1'b0;
             state_reg <= 0;
             fword <= 0;
+            flag_phase <= 0;
+
+            tmp5 <= 0;
+        end
+    else if(rxd_out==8'h02)
+        begin
+//            ready_fword <= 1'b0;
+            state_reg <= 0;
+            fword <= 0;
+            flag_phase <= 1;
         end
     else
         begin
@@ -129,14 +143,31 @@ always@(posedge rxd_flag or negedge rst)begin
 //                    tmp <= rxd_out << 24;
                     tmp3 <= tmp2 + (rxd_out << 24); // +tmp
 //                    fword <= fword + (rxd_out << 24);
-                    state_reg <= 0;
+                    
+                    if(!flag_phase)
+                        state_reg <= 0;
+                    else
+                        state_reg <= 4;
+
 //                    ready_fword <= 1'b1;
+                    led <= !led;
+                end
+                
+                4'd4: begin
+                    tmp4 <= rxd_out;
+                    state_reg <= 5;
+                end
+
+                4'd5: begin
+                    tmp5 <= tmp4 + (rxd_out << 8);
+                    state_reg <= 0;  
                 end
 
                 default: begin
                     fword <= 0;
                     state_reg <= 0;
 //                    ready_fword <= 1'b0;
+                    flag_phase <= 0;
                 end
             endcase
         end
@@ -190,7 +221,7 @@ dds_addr dds_addr_inst (
     .test(),
     .strobe(strobe_sin),
     .FWORD(tmp3), // fword // fword_valid
-    .PWORD(16'd2048)
+    .PWORD(tmp5) // tmp5 // 16'd2048
 );  
 //----------------------------------------------------------
 
