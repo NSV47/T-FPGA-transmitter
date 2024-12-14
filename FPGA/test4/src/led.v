@@ -189,7 +189,8 @@ dds_addr dds_addr_inst (
     .addr_out(addr_out),  // output wire [7 : 0] addr_out
     .test(),
     .strobe(strobe_sin),
-    .FWORD(tmp3) // fword // fword_valid
+    .FWORD(tmp3), // fword // fword_valid
+    .PWORD(16'd2048)
 );  
 //----------------------------------------------------------
 
