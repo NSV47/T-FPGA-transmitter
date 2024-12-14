@@ -97,36 +97,25 @@ reg [31:0] tmp;
 reg [31:0] tmp1;
 reg [31:0] tmp2;
 reg [31:0] tmp3;
-reg [15:0] tmp4;
-reg [15:0] tmp5;
 reg       flag_phase;
-reg [3:0] state_reg;
+reg [3:0] freq_state_reg;
 
 always@(posedge rxd_flag or negedge rst)begin
-    if(!rst)
-        led<=1'b0;
+    if(!rst)begin
+//        led<=1'b0;
+    end
     else if(rxd_out==8'h01)
         begin
             ready_fword <= 1'b0;
-            state_reg <= 0;
+            freq_state_reg <= 0;
             fword <= 0;
-            flag_phase <= 0;
-
-            tmp5 <= 0;
-        end
-    else if(rxd_out==8'h02)
-        begin
-            ready_fword <= 1'b0;
-            state_reg <= 0;
-            fword <= 0;
-            flag_phase <= 1;
         end
     else
         begin
-            case(state_reg)
+            case(freq_state_reg)
                 4'd0: begin
                     fword <= fword + rxd_out;
-                    state_reg <= 1;
+                    freq_state_reg <= 1;
                 end
 
                 4'd1: begin
@@ -134,47 +123,64 @@ always@(posedge rxd_flag or negedge rst)begin
                     tmp1 <= fword + (rxd_out << 8); // +tmp
 //                    fword = tmp1;
 //                    fword <= fword + (rxd_out << 8);
-                    state_reg <= 2;
+                    freq_state_reg <= 2;
                 end
 
                 4'd2: begin
 //                    tmp <= rxd_out << 16;
                     tmp2 <= tmp1 + (rxd_out << 16); // +tmp
 //                    fword <= fword + (rxd_out << 16);
-                    state_reg <= 3;
+                    freq_state_reg <= 3;
                 end
 
                 4'd3: begin
 //                    tmp <= rxd_out << 24;
                     tmp3 <= tmp2 + (rxd_out << 24); // +tmp
 //                    fword <= fword + (rxd_out << 24);
+                    freq_state_reg <= 4;
                     
-                    if(!flag_phase)begin
-                        state_reg <= 0;
-                        ready_fword <= 1'b1;
-                    end
-                    else begin
-                        state_reg <= 4;
-                    end
-                    
-                    led <= !led;
+//                    led <= !led;
                 end
                 
-                4'd4: begin
-                    tmp4 <= rxd_out;
-                    state_reg <= 5;
-                end
-
-                4'd5: begin
-                    tmp5 <= tmp4 + (rxd_out << 8);
-                    state_reg <= 0;
-                    ready_fword <= 1'b1;
-                end
 
                 default: begin
                     fword <= 0;
-                    state_reg <= 0;
+                    freq_state_reg <= 4;
 //                    ready_fword <= 1'b0;
+                end
+            endcase
+        end
+end
+
+reg [15:0] tmp4;
+reg [15:0] tmp5;
+reg [3:0] phase_state_reg = 4;
+always@(posedge rxd_flag or negedge rst)begin
+    if(!rst)begin
+        flag_phase <= 0;
+    end    
+    else if(rxd_out==8'h02)
+        begin
+            phase_state_reg <= 0;
+            flag_phase <= 1;
+        end
+    else
+        begin
+            case(phase_state_reg)
+      
+                4'd0: begin
+                    tmp4 <= rxd_out;
+                    phase_state_reg <= 1;
+                end
+
+                4'd1: begin
+                    tmp5 <= tmp4 + (rxd_out << 8);
+                    phase_state_reg <= 0;
+                    led <= !led;
+                end
+
+                default: begin
+                    phase_state_reg <= 4;
                     flag_phase <= 0;
                 end
             endcase
@@ -228,7 +234,7 @@ dds_addr dds_addr_inst (
     .addr_out(addr_out),  // output wire [7 : 0] addr_out
     .test(),
     .strobe(strobe_sin),
-    .FWORD(fword_valid), // fword // fword_valid
+    .FWORD(tmp3), // fword // fword_valid
     .PWORD(tmp5) // tmp5 // 16'd2048
 );  
 //----------------------------------------------------------
