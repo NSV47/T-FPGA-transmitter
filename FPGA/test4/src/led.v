@@ -175,7 +175,7 @@ always@(posedge rxd_flag or negedge rst)begin
 
                 4'd1: begin
                     tmp5 <= tmp4 + (rxd_out << 8);
-                    phase_state_reg <= 0;
+                    phase_state_reg <= 4;
                     led <= !led;
                 end
 
