@@ -24,8 +24,8 @@ wire				sck;
 wire				MOSI;
 wire				MISO;
 
-//reg [31:0] fword_valid;
-//reg ready_fword = 0;
+reg [31:0] fword_valid;
+reg ready_fword = 0;
 
 wire	[7:0]		rxd_out;
 
@@ -87,6 +87,11 @@ always@(posedge rxd_flag or negedge rst)begin
 end
 */
 
+always@(posedge clk)begin
+    if(ready_fword == 1'b1)
+        fword_valid = tmp3;
+end
+
 reg [31:0] fword;
 reg [31:0] tmp;
 reg [31:0] tmp1;
@@ -102,7 +107,7 @@ always@(posedge rxd_flag or negedge rst)begin
         led<=1'b0;
     else if(rxd_out==8'h01)
         begin
-//            ready_fword <= 1'b0;
+            ready_fword <= 1'b0;
             state_reg <= 0;
             fword <= 0;
             flag_phase <= 0;
@@ -111,7 +116,7 @@ always@(posedge rxd_flag or negedge rst)begin
         end
     else if(rxd_out==8'h02)
         begin
-//            ready_fword <= 1'b0;
+            ready_fword <= 1'b0;
             state_reg <= 0;
             fword <= 0;
             flag_phase <= 1;
@@ -144,12 +149,14 @@ always@(posedge rxd_flag or negedge rst)begin
                     tmp3 <= tmp2 + (rxd_out << 24); // +tmp
 //                    fword <= fword + (rxd_out << 24);
                     
-                    if(!flag_phase)
+                    if(!flag_phase)begin
                         state_reg <= 0;
-                    else
+                        ready_fword <= 1'b1;
+                    end
+                    else begin
                         state_reg <= 4;
-
-//                    ready_fword <= 1'b1;
+                    end
+                    
                     led <= !led;
                 end
                 
@@ -160,7 +167,8 @@ always@(posedge rxd_flag or negedge rst)begin
 
                 4'd5: begin
                     tmp5 <= tmp4 + (rxd_out << 8);
-                    state_reg <= 0;  
+                    state_reg <= 0;
+                    ready_fword <= 1'b1;
                 end
 
                 default: begin
@@ -220,7 +228,7 @@ dds_addr dds_addr_inst (
     .addr_out(addr_out),  // output wire [7 : 0] addr_out
     .test(),
     .strobe(strobe_sin),
-    .FWORD(tmp3), // fword // fword_valid
+    .FWORD(fword_valid), // fword // fword_valid
     .PWORD(tmp5) // tmp5 // 16'd2048
 );  
 //----------------------------------------------------------
