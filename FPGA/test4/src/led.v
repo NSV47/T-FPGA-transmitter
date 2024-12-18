@@ -232,7 +232,6 @@ dds_addr dds_addr_inst (
     .clk(clk),            // input wire clk
     .rst_n(1'b1),        // input wire rst_n // 1 enable
     .addr_out(addr_out),  // output wire [7 : 0] addr_out
-    .test(),
     .strobe(strobe_sin),
     .FWORD(tmp3), // fword // fword_valid
     .PWORD(tmp5) // tmp5 // 16'd2048
