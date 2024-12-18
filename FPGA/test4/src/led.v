@@ -133,33 +133,34 @@ always@(posedge rxd_flag or negedge rst)begin
         end
 end
 
-reg [15:0] tmp4;
-reg [15:0] tmp5;
-reg [3:0] phase_state_reg = 4;
+reg [15:0] oneBytes_p;
+reg [15:0] pword_reg;
+reg [ 3:0] state_reg_p = 4;
 always@(posedge rxd_flag or negedge rst)begin
     if(!rst)begin
+        pword_reg <= 0;
     end    
     else if(rxd_out==8'h02)
         begin
-            phase_state_reg <= 0;
+            state_reg_p <= 0;
         end
     else
         begin
-            case(phase_state_reg)
+            case(state_reg_p)
       
                 4'd0: begin
-                    tmp4 <= rxd_out;
-                    phase_state_reg <= 1;
+                    oneBytes_p <= rxd_out;
+                    state_reg_p <= 1;
                 end
 
                 4'd1: begin
-                    tmp5 <= tmp4 + (rxd_out << 8);
-                    phase_state_reg <= 4;
+                    pword_reg <= oneBytes_p + (rxd_out << 8);
+                    state_reg_p <= 4; // "другое" состояние, чтобы частота не мешалась
                     led <= !led;
                 end
 
                 default: begin
-                    phase_state_reg <= 4;
+                    state_reg_p <= 4; // "другое" состояние, чтобы частота не мешалась
                 end
             endcase
         end
@@ -212,7 +213,7 @@ dds_addr dds_addr_inst (
     .addr_out(addr_out),  // output wire [7 : 0] addr_out
     .strobe(strobe_sin),
     .FWORD(fword), // fword // fword_valid
-    .PWORD(tmp5) // tmp5 // 16'd2048
+    .PWORD(pword_reg) // tmp5 // 16'd2048
 );  
 //----------------------------------------------------------
 
